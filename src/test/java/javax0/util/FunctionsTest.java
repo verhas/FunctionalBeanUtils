@@ -7,10 +7,13 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.function.Function;
 
-import static javax0.util.BeanAccess.*;
 import static javax0.util.Functions.compose;
+import static javax0.util.Functions.safe;
+import static org.junit.Assert.assertEquals;
 
 
 public class FunctionsTest {
@@ -67,11 +70,13 @@ public class FunctionsTest {
     public void testAccessNoException() {
         boolean allYearsCleared = true;
         TaxPayer palino = createTestTaxPayer();
-        for (IncomeYear year : (Collection<IncomeYear>) beanField(palino, Functions0.compose(
+        for (IncomeYear year : (Collection<IncomeYear>) Optional.ofNullable(palino).map(Functions0.compose(
                 (Function<TaxPayer, IncomeYears>) TaxPayer::getIncomeYears,
                 (Function<IncomeYears, Collection<IncomeYear>>) IncomeYears::getIncomeYears)).get()) {
-            if (!beanField(year, YEAR_NOT_CLEARED,
-                    Functions0.compose((Function<IncomeYear, Status>) IncomeYear::getStatus, (Function<Status, Boolean>) Status::isTaxPaid))) {
+            if (!(Boolean) Optional.ofNullable(year).map(
+                    Functions0.compose((Function<IncomeYear, Status>) IncomeYear::getStatus,
+                            (Function<Status, Boolean>) Status::isTaxPaid))
+                    .orElse(YEAR_NOT_CLEARED)) {
                 allYearsCleared = false;
             }
         }
@@ -82,11 +87,14 @@ public class FunctionsTest {
     public void testAccessBetter() {
         boolean allYearsCleared = true;
         TaxPayer palino = createTestTaxPayer();
-        for (IncomeYear year : beanCollection(palino, compose(
-                TaxPayer::getIncomeYears,
-                IncomeYears::getIncomeYears))) {
-            if (!beanField(year, YEAR_NOT_CLEARED,
-                    compose(IncomeYear::getStatus, Status::isTaxPaid))) {
+        for (IncomeYear year : Optional.ofNullable(palino)
+                .map(TaxPayer::getIncomeYears)
+                .map(IncomeYears::getIncomeYears)
+                .orElse(Collections.emptyList())) {
+            if (!Optional.ofNullable(year)
+                    .map(IncomeYear::getStatus)
+                    .map(Status::isTaxPaid)
+                    .orElse(YEAR_NOT_CLEARED)) {
                 allYearsCleared = false;
             }
         }
@@ -97,14 +105,15 @@ public class FunctionsTest {
     public void testAccessWithBuilder() {
         boolean allYearsCleared = true;
         TaxPayer palino = createTestTaxPayer();
-        Function<TaxPayer, ? extends Collection<IncomeYear>> accessor =
-                compose((TaxPayer) null, (Collection<IncomeYear>) null)
-                        .f(TaxPayer::getIncomeYears)
-                        .f(IncomeYears::getIncomeYears).build();
 
-        for (IncomeYear year : beanCollection(palino, accessor)) {
-            if (!beanField(year, YEAR_NOT_CLEARED,
-                    compose(IncomeYear::getStatus, Status::isTaxPaid))) {
+        for (IncomeYear year : Optional.ofNullable(palino)
+                .map(TaxPayer::getIncomeYears)
+                .map(IncomeYears::getIncomeYears)
+                .orElse(Collections.emptyList())) {
+            if (!Optional.ofNullable(year)
+                    .map(IncomeYear::getStatus)
+                    .map(Status::isTaxPaid)
+                    .orElse(YEAR_NOT_CLEARED)) {
                 allYearsCleared = false;
             }
         }
@@ -116,8 +125,14 @@ public class FunctionsTest {
         boolean allYearsCleared = true;
         TaxPayer palino = createTestTaxPayer();
 
-        for (IncomeYear year : beanCollection(palino, compose(TaxPayer::getIncomeYears, IncomeYears::getIncomeYears))) {
-            if (!beanField(year, IncomeYear::getStatus, Status::isTaxPaid).orElse(false)) {
+        for (IncomeYear year : Optional.ofNullable(palino)
+                .map(TaxPayer::getIncomeYears)
+                .map(IncomeYears::getIncomeYears)
+                .orElse(Collections.emptyList())) {
+            if (!Optional.ofNullable(year)
+                    .map(IncomeYear::getStatus)
+                    .map(safe(Status::isTaxPaid))
+                    .orElse(false)) {
                 allYearsCleared = false;
             }
         }
@@ -129,14 +144,51 @@ public class FunctionsTest {
         TaxPayer palino = createTestTaxPayer();
 
         boolean someYearsNotCleared =
-                beanStream(palino, TaxPayer::getIncomeYears, IncomeYears::getIncomeYears)
-                        .anyMatch(year -> !beanField(year, IncomeYear::getStatus, Status::isTaxPaid)
-                                .orElse(false));
+                Optional.ofNullable(palino)
+                        .map(TaxPayer::getIncomeYears)
+                        .map(IncomeYears::getIncomeYears)
+                        .orElse(Collections.emptyList()).stream()
+                        .anyMatch(
+                                year -> !Optional.ofNullable(year)
+                                        .map(IncomeYear::getStatus)
+                                        .map(Status::isTaxPaid)
+                                        .orElse(false));
         Assert.assertTrue(someYearsNotCleared);
     }
 
     @Test
-    public void composeThreeFunctions() {
-        //   Function<Integer,Integer>
+    public void compose1Functions() {
+        assertEquals("a", safe(s -> s + "a").apply(""));
+    }
+
+    @Test
+    public void compose10Functions() {
+        assertEquals("0123456789", safe(
+                s -> s + "0",
+                s -> s + "1",
+                s -> s + "2",
+                s -> s + "3",
+                s -> s + "4",
+                s -> s + "5",
+                s -> s + "6",
+                s -> s + "7",
+                s -> s + "8",
+                s -> s + "9"
+        ).apply(""));
+    }
+
+    @Test
+    public void compose9Functions() {
+        assertEquals("012345678", safe(
+                s -> s + "0",
+                s -> s + "1",
+                s -> s + "2",
+                s -> s + "3",
+                s -> s + "4",
+                s -> s + "5",
+                s -> s + "6",
+                s -> s + "7",
+                s -> s + "8"
+        ).apply(""));
     }
 }

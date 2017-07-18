@@ -7,103 +7,107 @@ import java.util.function.Function;
 
 public class Functions {
 
-     static Function compose0(Function... functions) {
-        return compose(0, functions);
+    public static <A, B> Function<A, B> safe(Function<A, B> f) {
+        return x -> {
+            try {
+                return x == null || f == null ? null : f.apply(x);
+            } catch (Exception ignored) {
+                return null;
+            }
+        };
     }
 
-    private static Function compose(int index, Function[] functions) {
-        if (functions.length - 1 == index) {
-            return x -> x == null ? null : functions[index].apply(x);
-        }
-        return x -> x == null ? null : compose(index + 1, functions).compose(functions[index]).apply(x);
+    public static <V0, V1, V2> Function<V0, V2> safe(Function<V0, V1> f0,
+                                                     Function<V1, V2> f1) {
+        Function<V1, V2> f = safe(f1);
+        return f0 == null ? x -> null : safe(f.compose(f0));
     }
 
-    public static <V0, V1> Function<V0, V1> compose(Function<V0, V1> f0) {
-        return compose0(f0);
+    public static <V0, V1, V2, V3> Function<V0, V3> safe(Function<V0, V1> f0,
+                                                         Function<V1, V2> f1,
+                                                         Function<V2, V3> f2) {
+        Function<V1, V3> f = safe(f1, f2);
+        return f0 == null ? x -> null : safe(f.compose(f0));
     }
 
-    public static <V0, V1, V2> Function<V0, V2> compose(Function<V0, V1> f0,
-                                                        Function<V1, V2> f1) {
-        return compose0(f0, f1);
+    public static <V0, V1, V2, V3, V4> Function<V0, V4> safe(Function<V0, V1> f0,
+                                                             Function<V1, V2> f1,
+                                                             Function<V2, V3> f2,
+                                                             Function<V3, V4> f3) {
+        Function<V1, V4> f = safe(f1, f2, f3);
+        return f0 == null ? x -> null : safe(f.compose(f0));
     }
 
-    public static <V0, V1, V2, V3> Function<V0, V3> compose(Function<V0, V1> f0,
-                                                            Function<V1, V2> f1,
-                                                            Function<V2, V3> f2) {
-        return compose0(f0, f1, f2);
+    public static <V0, V1, V2, V3, V4, V5> Function<V0, V5> safe(Function<V0, V1> f0,
+                                                                 Function<V1, V2> f1,
+                                                                 Function<V2, V3> f2,
+                                                                 Function<V3, V4> f3,
+                                                                 Function<V4, V5> f4) {
+        Function<V1, V5> f = safe(f1, f2, f3, f4);
+        return f0 == null ? x -> null : safe(f.compose(f0));
     }
 
-    public static <V0, V1, V2, V3, V4> Function<V0, V4> compose(Function<V0, V1> f0,
-                                                                Function<V1, V2> f1,
-                                                                Function<V2, V3> f2,
-                                                                Function<V3, V4> f3) {
-        return compose0(f0, f1, f2, f3);
+    public static <V0, V1, V2, V3, V4, V5, V6> Function<V0, V6> safe(Function<V0, V1> f0,
+                                                                     Function<V1, V2> f1,
+                                                                     Function<V2, V3> f2,
+                                                                     Function<V3, V4> f3,
+                                                                     Function<V4, V5> f4,
+                                                                     Function<V5, V6> f5) {
+        Function<V1, V6> f = safe(f1, f2, f3, f4, f5);
+        return f0 == null ? x -> null : safe(f.compose(f0));
     }
 
-    public static <V0, V1, V2, V3, V4, V5> Function<V0, V5> compose(Function<V0, V1> f0,
-                                                                    Function<V1, V2> f1,
-                                                                    Function<V2, V3> f2,
-                                                                    Function<V3, V4> f3,
-                                                                    Function<V4, V5> f4) {
-        return compose0(f0, f1, f2, f3, f4);
+    public static <V0, V1, V2, V3, V4, V5, V6, V7> Function<V0, V7> safe(Function<V0, V1> f0,
+                                                                         Function<V1, V2> f1,
+                                                                         Function<V2, V3> f2,
+                                                                         Function<V3, V4> f3,
+                                                                         Function<V4, V5> f4,
+                                                                         Function<V5, V6> f5,
+                                                                         Function<V6, V7> f6) {
+        Function<V1, V7> f = safe(f1, f2, f3, f4, f5, f6);
+        return f0 == null ? x -> null : safe(f.compose(f0));
     }
 
-    public static <V0, V1, V2, V3, V4, V5, V6> Function<V0, V6> compose(Function<V0, V1> f0,
-                                                                        Function<V1, V2> f1,
-                                                                        Function<V2, V3> f2,
-                                                                        Function<V3, V4> f3,
-                                                                        Function<V4, V5> f4,
-                                                                        Function<V5, V6> f5) {
-        return compose0(f0, f1, f2, f3, f4, f5);
+    public static <V0, V1, V2, V3, V4, V5, V6, V7, V8> Function<V0, V8> safe(Function<V0, V1> f0,
+                                                                             Function<V1, V2> f1,
+                                                                             Function<V2, V3> f2,
+                                                                             Function<V3, V4> f3,
+                                                                             Function<V4, V5> f4,
+                                                                             Function<V5, V6> f5,
+                                                                             Function<V6, V7> f6,
+                                                                             Function<V7, V8> f7) {
+        Function<V1, V8> f = safe(f1, f2, f3, f4, f5, f6, f7);
+        return f0 == null ? x -> null : safe(f.compose(f0));
     }
 
-    public static <V0, V1, V2, V3, V4, V5, V6, V7> Function<V0, V7> compose(Function<V0, V1> f0,
-                                                                            Function<V1, V2> f1,
-                                                                            Function<V2, V3> f2,
-                                                                            Function<V3, V4> f3,
-                                                                            Function<V4, V5> f4,
-                                                                            Function<V5, V6> f5,
-                                                                            Function<V6, V7> f6) {
-        return compose0(f0, f1, f2, f3, f4, f5, f6);
+    public static <V0, V1, V2, V3, V4, V5, V6, V7, V8, V9> Function<V0, V9> safe(Function<V0, V1> f0,
+                                                                                 Function<V1, V2> f1,
+                                                                                 Function<V2, V3> f2,
+                                                                                 Function<V3, V4> f3,
+                                                                                 Function<V4, V5> f4,
+                                                                                 Function<V5, V6> f5,
+                                                                                 Function<V6, V7> f6,
+                                                                                 Function<V7, V8> f7,
+                                                                                 Function<V8, V9> f8) {
+        Function<V1, V9> f = safe(f1, f2, f3, f4, f5, f6, f7, f8);
+        return f0 == null ? x -> null : safe(f.compose(f0));
     }
 
-    public static <V0, V1, V2, V3, V4, V5, V6, V7, V8> Function<V0, V8> compose(Function<V0, V1> f0,
-                                                                                Function<V1, V2> f1,
-                                                                                Function<V2, V3> f2,
-                                                                                Function<V3, V4> f3,
-                                                                                Function<V4, V5> f4,
-                                                                                Function<V5, V6> f5,
-                                                                                Function<V6, V7> f6,
-                                                                                Function<V7, V8> f7) {
-        return compose0(f0, f1, f2, f3, f4, f5, f6, f7);
+    public static <V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, V10> Function<V0, V10> safe(Function<V0, V1> f0,
+                                                                                       Function<V1, V2> f1,
+                                                                                       Function<V2, V3> f2,
+                                                                                       Function<V3, V4> f3,
+                                                                                       Function<V4, V5> f4,
+                                                                                       Function<V5, V6> f5,
+                                                                                       Function<V6, V7> f6,
+                                                                                       Function<V7, V8> f7,
+                                                                                       Function<V8, V9> f8,
+                                                                                       Function<V9, V10> f9) {
+        Function<V1, V10> f = safe(f1, f2, f3, f4, f5, f6, f7, f8, f9);
+        return f0 == null ? x -> null : safe(f.compose(f0));
     }
 
-    public static <V0, V1, V2, V3, V4, V5, V6, V7, V8, V9> Function<V0, V9> compose(Function<V0, V1> f0,
-                                                                                    Function<V1, V2> f1,
-                                                                                    Function<V2, V3> f2,
-                                                                                    Function<V3, V4> f3,
-                                                                                    Function<V4, V5> f4,
-                                                                                    Function<V5, V6> f5,
-                                                                                    Function<V6, V7> f6,
-                                                                                    Function<V7, V8> f7,
-                                                                                    Function<V8, V9> f8) {
-        return compose0(f0, f1, f2, f3, f4, f5, f6, f7, f8);
-    }
-
-    public static <V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, V10> Function<V0, V10> compose(Function<V0, V1> f0,
-                                                                                          Function<V1, V2> f1,
-                                                                                          Function<V2, V3> f2,
-                                                                                          Function<V3, V4> f3,
-                                                                                          Function<V4, V5> f4,
-                                                                                          Function<V5, V6> f5,
-                                                                                          Function<V6, V7> f6,
-                                                                                          Function<V7, V8> f7,
-                                                                                          Function<V8, V9> f8,
-                                                                                          Function<V9, V10> f9) {
-        return compose0(f0, f1, f2, f3, f4, f5, f6, f7, f8, f9);
-    }
-
-    public static <FROM,TO> ComposeBuilder<FROM,TO> compose(FROM from, TO to){
+    public static <FROM, TO> ComposeBuilder<FROM, TO> compose(FROM from, TO to) {
         return new ComposeBuilder<>();
     }
 
